@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .weather-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 30px;
+            color: white;
+        }
+        .search-input {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            border-radius: 15px 0 0 15px;
+        }
+        .search-input::placeholder { color: rgba(255,255,255,0.5); }
+        .search-input:focus {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.4);
+            color: white;
+            box-shadow: none;
+        }
+        .search-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 0 15px 15px 0;
+        }
+        .temperature {
+            font-size: 5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .weather-icon { width: 120px; filter: drop-shadow(0 0 20px rgba(255,255,255,0.3)); }
+        .info-card {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            transition: transform 0.3s;
+        }
+        .info-card:hover { transform: translateY(-5px); }
+        .city-name {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(102,126,234,0.5);
+        }
+        .app-title {
+            background: linear-gradient(135deg, #667eea, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        .alert-custom {
+            background: rgba(255,77,77,0.2);
+            border: 1px solid rgba(255,77,77,0.3);
+            border-radius: 15px;
+            color: #ff6b6b;
+        }
+        .description-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 20px;
+            padding: 8px 20px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-7">
+                <div class="weather-card p-5">
+                    
+                    <!-- Title -->
+                    <div class="text-center mb-4">
+                        <h1 class="app-title">
+                            <i class="fas fa-cloud-sun me-2"></i>Weather App
+                        </h1>
+                        <p class="text-white-50">Check weather anywhere in the world</p>
+                    </div>
+
+                    <!-- Search -->
+                    <form method="POST" class="mb-4">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" name="city" class="form-control form-control-lg search-input" 
+                                   placeholder="🌍 Enter city name..." required>
+                            <button type="submit" class="btn search-btn px-4">
+                                <i class="fas fa-search text-white fs-5"></i>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Error -->
+                    {% if error %}
+                    <div class="alert-custom p-3 text-center mb-4">
+                        <i class="fas fa-exclamation-circle me-2"></i>{{ error }}
+                    </div>
+                    {% endif %}
+
+                    <!-- Weather Data -->
+                    {% if weather_data %}
+                    <div class="text-center">
+                        <div class="city-name text-white mb-2">
+                            <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                            {{ weather_data.city }}
+                        </div>
+
+                        <div class="text-white-50 mb-3 text-center mx-auto">
+                            <div class="mb-1"><i class="fas fa-calendar me-2"></i>{{ weather_data.date }}</div>
+                            <div><i class="fas fa-clock me-2"></i>{{ weather_data.time }}</div>
+                        </div>
+                        
+                        <img src="https://openweathermap.org/img/wn/{{ weather_data.icon }}@2x.png" 
+                             class="weather-icon my-2">
+                        
+                        <div class="temperature">{{ weather_data.temperature }}°C</div>
+                        
+                        <div class="description-badge text-white my-3">
+                            <i class="fas fa-cloud me-2"></i>
+                            {{ weather_data.description|title }}
+                        </div>
+
+                        <!-- Info Cards -->
+                        <div class="row g-3 mt-3">
+                            <div class="col-6">
+                                <div class="info-card p-3 text-center">
+                                    <i class="fas fa-tint fs-2 mb-2" style="color: #667eea;"></i>
+                                    <div class="fw-bold fs-4 text-white">{{ weather_data.humidity }}%</div>
+                                    <small class="text-white-50">Humidity</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="info-card p-3 text-center">
+                                    <i class="fas fa-wind fs-2 mb-2" style="color: #f093fb;"></i>
+                                    <div class="fw-bold fs-4 text-white">{{ weather_data.wind_speed }} m/s</div>
+                                    <small class="text-white-50">Wind Speed</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <!-- Default State -->
+                    <div class="text-center py-4">
+                        <i class="fas fa-globe fa-5x mb-4" style="color: rgba(255,255,255,0.2);"></i>
+                        <p class="text-white-50 fs-5">Enter a city name to get weather information</p>
+                    </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
