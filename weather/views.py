@@ -19,6 +19,7 @@ def index(request):
             weather_data = {
                 'city': data['name'],
                 'temperature': data['main']['temp'],
+                'feels_like': data['main']['feels_like'],
                 'description': data['weather'][0]['description'],
                 'humidity': data['main']['humidity'],
                 'wind_speed': data['wind']['speed'],
